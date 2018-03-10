@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Towns Widget</title>
+</head>
+<body>
+    <section id="towns-widget">
+        <select name="towns" id="towns">
+            <option value="1">Town 1</option>
+            <option value="2">Town 2</option>
+            <option value="3">Town 3</option>
+            <option value="4">Town 4</option>
+        </select>
+        <br /><br />
+        <div class="btns">
+            <button id="btnUp">up</button>
+            <button id="btnDown">Down</button>
+        </div>
+    </section>
+</body>
+<script
+			  src="https://code.jquery.com/jquery-1.12.4.min.js"
+			  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+			  crossorigin="anonymous"></script>
+<script>
+    ;(function($){
+
+        function TownsWidget(options) {
+            var self = this;
+            self.$el = $(options.selector);
+            self.$select = self.$el.find("#towns");
+            self.$options = self.$select.find("option");
+            self.$btnUp = self.$el.find("#btnUp");
+            self.$btnDown = self.$el.find("#btnDown");
+            self.state = {
+                towns: [], // text of each option (town name)
+                selected: 0 // index of selected option (town)
+            };
+        }
+        TownsWidget.prototype.init = function() {
+            var self = this;
+            self.state.towns = self.$options.map(function() {
+                return this.text;
+            }).get();
+
+            self.$btnUp.on("click", function() {
+                self.up();
+            });
+            self.$btnDown.on("click", function() {
+                self.down();
+            });
+            self.$select.on("change", function() {
+                self.state.selected = self.$select.find(":selected").index();
+            });
+        };
+        TownsWidget.prototype.up = function() {
+            var self = this;
+            self.move(self.state.selected, self.state.selected - 1);
+            self.update();
+        };
+        TownsWidget.prototype.down = function() {
+            var self = this;
+            self.move(self.state.selected, self.state.selected + 1);
+            self.update();
+        };
+        TownsWidget.prototype.move = function(from, to) {
+            var self = this;
+            self.state.towns.splice(to, 0, self.state.towns.splice(from, 1)[0]);
+        };
+        TownsWidget.prototype.update = function(from, to) {
+            var self = this;
+            self.$options.map(function(i) {
+                this.text = self.state.towns[i];
+            });
+        };
+        var towns = new TownsWidget({selector: "#towns-widget"});
+        towns.init();
+    }(jQuery))
+</script>
+</html>
